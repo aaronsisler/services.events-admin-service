@@ -142,6 +142,20 @@
             <artifactId>micronaut-http-client</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Cucumber testing -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>7.15.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Cucumber testing -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>7.15.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
