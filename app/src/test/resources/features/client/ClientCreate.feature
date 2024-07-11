@@ -10,7 +10,7 @@ Feature: Clients are able to be created
     And the endpoint replies with the newly created clients
     And the newly created clients were saved to the database
 
-  @Disabled
+#  @Disabled
   Scenario: Create client with invalid data
     Given the application is up
     And the client is invalid
