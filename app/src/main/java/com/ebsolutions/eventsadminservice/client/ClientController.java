@@ -27,7 +27,6 @@ public class ClientController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> create(@RequestBody List<@Valid Client> clients) {
         try {
-            System.out.println(clients);
             return ResponseEntity.ok(clientService.create(clients));
         } catch (DataProcessingException dpe) {
             return ResponseEntity.internalServerError().body(dpe.getMessage());
@@ -40,8 +39,7 @@ public class ClientController {
         String errorMessage;
         if (!violations.isEmpty()) {
             StringBuilder builder = new StringBuilder();
-            violations.forEach(violation -> System.out.println(violation.getMessage()));
-            violations.forEach(violation -> builder.append(" ").append(violation.getMessage()));
+            violations.forEach(violation -> builder.append(violation.getPropertyPath()).append(" ").append(violation.getMessage()));
             errorMessage = builder.toString();
         } else {
             errorMessage = "ConstraintViolationException occurred.";
