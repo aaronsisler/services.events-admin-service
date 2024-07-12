@@ -57,8 +57,11 @@ public class ClientSteps {
     private List<Client> clients;
     private String requestJson;
 
+
     @Before
     public void before() {
+        // Below is needed since invocations seem to hold between each test
+        clearInvocations(dynamoDbEnhancedClient);
         when(dynamoDbEnhancedClient.batchWriteItem(isA(BatchWriteItemEnhancedRequest.class))).thenReturn(batchWriteResult);
         when(batchWriteResult.unprocessedPutItemsForTable(any())).thenReturn(Collections.emptyList());
     }
