@@ -3,6 +3,8 @@ info:
   title: Shared Classes
   version: "1.0"
 paths:
+  # TODO warning in the logs during mvnci
+  # Empty operationId found for path: GET /actuator/health. Renamed to auto-generated operationId: actuatorHealthGET
   /actuator/health:
     get:
       responses:

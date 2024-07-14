@@ -3,6 +3,7 @@ info:
   title: Clients REST API
   version: "1.0"
 paths:
+  # TODO Same as shared issue?
   /clients:
     post:
       requestBody:
