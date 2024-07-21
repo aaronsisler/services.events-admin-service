@@ -1,5 +1,6 @@
 package com.ebsolutions.eventsadminservice.client;
 
+import com.ebsolutions.eventsadminservice.config.DatabaseConfig;
 import com.ebsolutions.eventsadminservice.model.Client;
 import com.ebsolutions.eventsadminservice.testing.AssertionUtil;
 import com.ebsolutions.eventsadminservice.utils.DateTimeComparisonUtil;
@@ -15,12 +16,16 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.enhanced.dynamodb.model.BatchWriteItemEnhancedRequest;
 import software.amazon.awssdk.enhanced.dynamodb.model.BatchWriteResult;
 import software.amazon.awssdk.services.dynamodb.model.WriteRequest;
@@ -34,6 +39,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Import(ClientSteps.ClientContext.class)
 public class ClientSteps {
     @Autowired
     protected MockMvc mockMvc;
@@ -41,14 +47,9 @@ public class ClientSteps {
     @Autowired
     protected DynamoDbEnhancedClient dynamoDbEnhancedClient;
 
-    @Autowired
-    protected DynamoDbTable<ClientDto> clientTable;
-
-    @Autowired
-    protected BatchWriteResult batchWriteResult;
-
+    protected BatchWriteResult batchWriteResult = mock(BatchWriteResult.class);
     protected ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-    private ObjectWriter objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
+    private final ObjectWriter objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
 
     private Client clientOne;
     private Client clientTwo;
@@ -56,7 +57,6 @@ public class ClientSteps {
     private LocalDateTime now;
     private List<Client> clients;
     private String requestJson;
-
 
     @Before
     public void before() {
@@ -164,5 +164,54 @@ public class ClientSteps {
     @Then("the endpoint replies with a bad request status")
     public void theEndpointRepliesWithABadRequestStatus() throws Exception {
         performedActions.andExpect(status().isBadRequest());
+    }
+
+    @TestConfiguration
+    public static class ClientContext {
+
+        @Bean
+        public TableSchema<ClientDto> tableSchema() {
+            return TableSchema.fromBean(ClientDto.class);
+        }
+
+        @Bean
+        public DynamoDbTable<ClientDto> dynamoDbTable() {
+            @SuppressWarnings("unchecked")
+            DynamoDbTable<ClientDto> dynamoDbTable = mock(DynamoDbTable.class);
+            when(dynamoDbTable.tableName()).thenReturn("MOCK_TABLE_NAME");
+            when(dynamoDbTable.tableSchema()).thenReturn(tableSchema());
+            return dynamoDbTable;
+        }
+
+        @Bean
+        public DynamoDbEnhancedClient dynamoDbEnhancedClient() {
+            DynamoDbEnhancedClient dynamoDbEnhancedClient = mock(DynamoDbEnhancedClient.class);
+
+            when(dynamoDbEnhancedClient.table(isA(String.class), isA(TableSchema.class))).thenReturn(dynamoDbTable());
+
+            return dynamoDbEnhancedClient;
+        }
+
+        @Bean
+        public DatabaseConfig databaseConfig() {
+            DatabaseConfig databaseConfig = mock(DatabaseConfig.class);
+            when(databaseConfig.getTableName()).thenReturn("TEST_DATABASE_TABLE_NAME");
+            return databaseConfig;
+        }
+
+        @Bean
+        public ClientDao clientDao() {
+            return new ClientDao(dynamoDbEnhancedClient(), databaseConfig());
+        }
+
+        @Bean
+        public ClientService clientService() {
+            return new ClientService(clientDao());
+        }
+
+        @Bean
+        public ClientController clientController() {
+            return new ClientController(clientService());
+        }
     }
 }

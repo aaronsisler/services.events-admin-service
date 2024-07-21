@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @AutoConfigureMockMvc
 @CucumberContextConfiguration
-@SpringBootTest(classes = CommonContext.class)
+@SpringBootTest
+//@SpringBootTest(classes = ClientContext.class)
 public class SpringGlue {
 }
