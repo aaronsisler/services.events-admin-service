@@ -164,11 +164,11 @@
 
         <!-- Testing framework for Java testing -->
         <!-- Version: BOM -->
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-suite</artifactId>
-            <scope>test</scope>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>org.junit.platform</groupId>-->
+        <!--            <artifactId>junit-platform-suite</artifactId>-->
+        <!--            <scope>test</scope>-->
+        <!--        </dependency>-->
 
         <!-- Testing framework for BDD and Java integration -->
         <!-- Version: BOM -->
@@ -190,7 +190,8 @@
         <!-- Version: BOM -->
         <dependency>
             <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <!--            <artifactId>cucumber-junit-platform-engine</artifactId>-->
+            <artifactId>cucumber-junit</artifactId>
             <scope>test</scope>
         </dependency>
 
